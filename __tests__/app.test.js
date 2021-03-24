@@ -40,14 +40,13 @@ describe('03_separation-of-concerns routes', () => {
   });
 
   it('gets all orders in our database', async () => {
-    await Order.insert({ quantity: 10 });
+    await Order.insert({ quantity: 5 });
     return request(app)
       .get('/api/v1/orders')
       .then((res) => {
-        // expect(createMessage).toHaveBeenCalledTimes(1);
         expect(res.body).toEqual([{
           id: '1',
-          quantity: 10,
+          quantity: 5,
         }]);
       });
   });
