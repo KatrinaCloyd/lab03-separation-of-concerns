@@ -51,4 +51,16 @@ describe('03_separation-of-concerns routes', () => {
       });
   });
 
+  it('gets a single order by id', async () => {
+    await Order.insert({ quantity: 5 });
+    return request(app)
+      .get('/api/v1/orders/1')
+      .then((res) => {
+        expect(res.body).toEqual({
+          id: '1',
+          quantity: 5,
+        });
+      });
+  });
+
 });
