@@ -15,7 +15,7 @@ describe('03_separation-of-concerns routes', () => {
     return setup(pool);
   });
 
-  it('creates a new order in our database and sends a text message', () => {
+  it('creates a new order in our database and sends a text message', async () => {
     return request(app)
       .post('/api/v1/orders')
       .send({ quantity: 10 })
@@ -73,11 +73,23 @@ describe('03_separation-of-concerns routes', () => {
     await Order.insert({ quantity: 5 });
     return request(app)
       .put('/api/v1/orders/1')
-      .send({ quantity: 10 })
+      .send({ quantity: 321 })
       .then((res) => {
         expect(res.body).toEqual({
           id: '1',
-          quantity: 10,
+          quantity: 321,
+        });
+      });
+  });
+
+  it('deletes an order by its id', async () => {
+    await Order.insert({ quantity: 17 });
+    return request(app)
+      .delete('/api/v1/orders/1')
+      .then((res) => {
+        expect(res.body).toEqual({
+          id: '1',
+          quantity: 17,
         });
       });
   });
