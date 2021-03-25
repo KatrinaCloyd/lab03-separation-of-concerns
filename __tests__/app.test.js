@@ -41,13 +41,19 @@ describe('03_separation-of-concerns routes', () => {
 
   it('gets all orders in our database', async () => {
     await Order.insert({ quantity: 5 });
+    await Order.insert({ quantity: 12 });
     return request(app)
       .get('/api/v1/orders')
       .then((res) => {
         expect(res.body).toEqual([{
           id: '1',
           quantity: 5,
-        }]);
+        },
+        {
+          id: '2',
+          quantity: 12,
+        },
+        ]);
       });
   });
 
@@ -59,6 +65,19 @@ describe('03_separation-of-concerns routes', () => {
         expect(res.body).toEqual({
           id: '1',
           quantity: 5,
+        });
+      });
+  });
+
+  it('updates an order quantity and sends an update text message', async () => {
+    await Order.insert({ quantity: 5 });
+    return request(app)
+      .put('/api/v1/orders/1')
+      .send({ quantity: 10 })
+      .then((res) => {
+        expect(res.body).toEqual({
+          id: '1',
+          quantity: 10,
         });
       });
   });
