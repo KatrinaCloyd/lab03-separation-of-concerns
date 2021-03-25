@@ -4,6 +4,9 @@ const request = require('supertest');
 const app = require('../lib/app');
 const Order = require('../lib/models/Order');
 
+jest.mock('../lib/utils/twilio');
+const twilio = require('../lib/utils/twilio');
+
 jest.mock('twilio', () => () => ({
   messages: {
     create: jest.fn(),
@@ -15,13 +18,17 @@ describe('03_separation-of-concerns routes', () => {
     return setup(pool);
   });
 
+  beforeEach(() => {
+    twilio.sendSms.mockReset();
+  });
+
 
   it('creates a new order in our database and sends a text message', async () => {
     return request(app)
       .post('/api/v1/orders')
       .send({ quantity: 10 })
       .then((res) => {
-        // expect(createMessage).toHaveBeenCalledTimes(1);
+        expect(twilio.sendSms).toHaveBeenCalledTimes(1);
         expect(res.body).toEqual({
           id: '1',
           quantity: 10,
@@ -76,6 +83,7 @@ describe('03_separation-of-concerns routes', () => {
       .put('/api/v1/orders/1')
       .send({ quantity: 321 })
       .then((res) => {
+        expect(twilio.sendSms).toHaveBeenCalledTimes(1);
         expect(res.body).toEqual({
           id: '1',
           quantity: 321,
@@ -88,6 +96,7 @@ describe('03_separation-of-concerns routes', () => {
     return request(app)
       .delete('/api/v1/orders/1')
       .then((res) => {
+        expect(twilio.sendSms).toHaveBeenCalledTimes(1);
         expect(res.body).toEqual({
           id: '1',
           quantity: 17,
